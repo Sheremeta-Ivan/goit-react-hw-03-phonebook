@@ -16,6 +16,24 @@ class App extends Component {
     filter: '',
   };
 
+  //save data in LocalStorage
+  componentDidMount() {
+    const contacts = localStorage.getItem('contacts'); // get data from localStorage.
+    const parsedContacts = JSON.parse(contacts);
+
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
+    }
+  }
+
+  componentDidUpdate(_, prevState) {
+    if (this.state.contacts !== prevState.contacts) {
+      //compare data from state and prevState
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+      //if contact changed, add to localStorage
+    }
+  }
+
   //add new contact in contactlist
 
   addContact = contact => {
@@ -58,7 +76,7 @@ class App extends Component {
 
   render() {
     const visibleContacts = this.getVisibleContacts();
-    const { filter } = this.state;
+    const { filter, contacts } = this.state;
     return (
       <Container>
         <Title>Phonebook</Title>
@@ -66,13 +84,13 @@ class App extends Component {
         <ContactForm onSubmit={this.addContact} />
 
         <SubTitle>Contacts</SubTitle>
-        {this.state.contacts.length > 0 ? (
+        {contacts.length > 0 ? (
           <Filter value={filter} onChangeFilter={this.changeFilter} />
         ) : (
           <Wrapper>Your phonebook is empty. Add first contact!</Wrapper>
         )}
 
-        {this.state.contacts.length > 0 && (
+        {contacts.length > 0 && (
           <ContactList
             contacts={visibleContacts}
             onRemoveContact={this.removeContact}
